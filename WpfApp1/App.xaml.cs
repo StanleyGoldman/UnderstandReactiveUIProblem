@@ -4,6 +4,8 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Windows;
 using ReactiveUI;
+using ReactiveUI.Validation.Extensions;
+using ReactiveUI.Validation.Helpers;
 
 namespace WpfApp1
 {
@@ -38,7 +40,7 @@ namespace WpfApp1
         public IScheduler TaskPool => TaskPoolScheduler.Default;
     }
 
-    public class ApplicationViewModel : ReactiveObject
+    public class ApplicationViewModel : ReactiveValidationObject<ApplicationViewModel>
     {
         private readonly ISchedulerProvider _schedulerProvider;
 
@@ -46,7 +48,21 @@ namespace WpfApp1
         {
             _schedulerProvider = schedulerProvider;
 
+            NameRule = this.ValidationRule(
+                viewModel => viewModel.Name,
+                value => !string.IsNullOrWhiteSpace(value),
+                value => $"Name must be set");
+
             SomeCommand = ReactiveCommand.CreateFromObservable<string, Unit>(SomeFunction);
+        }
+
+        public ValidationHelper NameRule { get; }
+
+        private string _name;
+        public string Name
+        {
+            get => _name;
+            set => this.RaiseAndSetIfChanged(ref _name, value);
         }
 
         public ReactiveCommand<string, Unit> SomeCommand { get; }
