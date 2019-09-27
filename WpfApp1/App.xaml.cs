@@ -44,7 +44,7 @@ namespace WpfApp1
     {
         private readonly ISchedulerProvider _schedulerProvider;
 
-        public ApplicationViewModel(ISchedulerProvider schedulerProvider)
+        public ApplicationViewModel(ISchedulerProvider schedulerProvider):base(schedulerProvider.TaskPool)
         {
             _schedulerProvider = schedulerProvider;
 
